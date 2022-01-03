@@ -1,26 +1,26 @@
-隨機導入
+import random
 
-高 =  1000
+HI = 1000
 
-secret_number  = 隨機。randint ( 1,嗨)
-num_guesses  =  0
+secret_number = random.randint(1, HI)
+num_guesses = 0
 
-而 真：
-    猜測 = 輸入（“你的猜測是什麼？”）
-    猜測 =  int (猜測)
+while True:
+    guess = input("What's your guess? ")
+    guess = int(guess)
 
-    num_guesses  =  num_guesses  +  1
+    num_guesses = num_guesses + 1
 
-    ＃ 太高
-    如果 猜測 >  secret_number：
-        打印（“太高”）
+    # TOO HIGH
+    if guess > secret_number:
+        print("TOO HIGH")
 
-    ＃ 太低
-    如果 猜測 <  secret_number：
-        打印（“太低”）
+    # TOO LOW
+    if guess < secret_number:
+        print("TOO LOW")
 
-    ＃ 正確的
-    如果 猜測 ==  secret_number：
-        打印（“你猜對了”）
-        打印（“IT TOOK YOU”，num_guesses，“GUESSES”）
-        休息
+    # CORRECT
+    if guess == secret_number:
+        print("YOU GUESSED RIGHT")
+        print("IT TOOK YOU", num_guesses, "GUESSES")
+        break
