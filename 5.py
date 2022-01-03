@@ -1,120 +1,534 @@
-from qiskit import QuantumCircuit, Aer
-import numpy as np
 import streamlit as st
+from PIL import Image 
+import numpy as np
+import pandas as pd
+from game import get_random_value,validate,get_random_value_add
+import math
 
 
-def quantum_superposition():
+def main():
+    # menu = ["Play"]
+    # option = st.sidebar.selectbox("Menu",menu)
 
-    circuit = QuantumCircuit(1,1)
+    # if option == "Play":
+        st.subheader('Tic Tac Toe Game using Quantum Computing')
+        st.write("Computer --> |0>")
+        st.write("User --> |1>")
+        psi = '|Ѱ>'
 
-    circuit.h(0)
+        if 'board' not in st.session_state:
+            st.session_state.board = np.array([[psi,psi,psi],[psi,psi,psi],[psi,psi,psi]])
+            st.session_state.available_moves = [0,1,2,3,4,5,6,7,8,9]
 
-    circuit.measure(0,0)
+        moves = st.selectbox("Make a move!",st.session_state.available_moves)
+      
+        if moves == 1:
+            if st.session_state.board[0,0]==psi:
 
-    simulator = Aer.get_backend('aer_simulator')
+                st.session_state.board[0,0] = '|1>'
 
-    result = simulator.run(circuit).result().get_counts()
+                user_flag = validate(st.session_state.board)
 
-    return result
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
 
-def get_random_value_add():
-    res = quantum_superposition()
-    values = list(res.values())
-    keys = list(res.keys())
-    random_value = int(keys[np.argmax(values)])
-    return random_value
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
 
-def get_random_value():
-    res1 = quantum_superposition()
-    values = list(res1.values())
-    keys = list(res1.keys())
-    random_value1 = int(keys[np.argmax(values)])
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
 
-    res2 = quantum_superposition()
-    values = list(res2.values())
-    keys = list(res2.keys())
-    random_value2 = int(keys[np.argmax(values)])
+                comp_flag = validate(st.session_state.board)
 
-    res3 = quantum_superposition()
-    values = list(res3.values())
-    keys = list(res3.keys())
-    random_value3 = int(keys[np.argmax(values)])
+                if not comp_flag:
+                    return 0
 
-    res4 = quantum_superposition()
-    values = list(res4.values())
-    keys = list(res4.keys())
-    random_value4 = int(keys[np.argmax(values)])
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
 
-    res5 = quantum_superposition()
-    values = list(res5.values())
-    keys = list(res5.keys())
-    random_value5 = int(keys[np.argmax(values)])
+        elif moves == 2:
+            if st.session_state.board[0,1]==psi:
 
-    res6 = quantum_superposition()
-    values = list(res6.values())
-    keys = list(res6.keys())
-    random_value6 = int(keys[np.argmax(values)])
+                st.session_state.board[0,1] =  '|1>'
 
-    res7 = quantum_superposition()
-    values = list(res7.values())
-    keys = list(res7.keys())
-    random_value7 = int(keys[np.argmax(values)])
+                user_flag = validate(st.session_state.board)
 
-    res8 = quantum_superposition()
-    values = list(res8.values())
-    keys = list(res8.keys())
-    random_value8 = int(keys[np.argmax(values)])
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
 
-    res9 = quantum_superposition()
-    values = list(res9.values())
-    keys = list(res9.keys())
-    random_value9 = int(keys[np.argmax(values)])
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
 
-    total_rand = random_value1+random_value2+random_value3+random_value4+random_value5+random_value6+random_value7+random_value8+random_value9
-    return total_rand
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+                
+                comp_flag = validate(st.session_state.board)
 
-def validate(arr):
-    flag = True
-    zero_ket = '|0>'
-    one_ket = '|1>'
+                if not comp_flag:
+                    return 0
 
-    if arr[0,0]==one_ket and arr[1,1]==one_ket and arr[2,2]==one_ket:
-        st.success('user has won!')
-        flag=False
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
 
-    if arr[0,0]==zero_ket and arr[1,1]==zero_ket and arr[2,2]==zero_ket:
-        st.success('computer won!')
-        flag=False
+        elif moves == 3:
+            if st.session_state.board[0,2]==psi:
 
-    elif arr[0,2]==one_ket and arr[1,1]==one_ket and arr[2,0]==one_ket:
-        st.success('user has won!')
-        flag=False
+                st.session_state.board[0,2] =  '|1>'
 
-    if not flag:
-        return 0
+                user_flag = validate(st.session_state.board)
 
-    if flag:
-        for index in [0,1,2]:
-            if(list(arr[index])==[one_ket,one_ket,one_ket]):
-                st.success('User has won!')
-                return 0
-        
-        for index in [0,1,2]:
-            if(list(arr[index])==[zero_ket,zero_ket,zero_ket]):
-                st.success('computer won!')
-                return 0
-        
-        for index in [0,1,2]:
-            if(list(arr[:,index])==[one_ket,one_ket,one_ket]):
-                st.success('User has won!')
-                return 0
-        
-        for index in [0,1,2]:
-            if(list(arr[:,index])==[zero_ket,zero_ket,zero_ket]):
-                st.success('computer  has won!')
-                return 0
-        
-        if '|Ѱ>' not in arr:
-            st.write('It is draw!')
-            return 0
-    return 1
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
+
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
+
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+                
+                comp_flag = validate(st.session_state.board)
+
+                if not comp_flag:
+                    return 0
+
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
+
+        elif moves == 4:
+            if st.session_state.board[1,0]==psi:
+
+                st.session_state.board[1,0] =  '|1>'
+
+                user_flag = validate(st.session_state.board)
+
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
+
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
+
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+
+                comp_flag = validate(st.session_state.board)
+
+                if not comp_flag:
+                    return 0
+
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
+
+
+        elif moves == 5:
+            if st.session_state.board[1,1]==psi:
+
+                st.session_state.board[1,1] =  '|1>'
+
+                user_flag = validate(st.session_state.board)
+
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
+
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
+
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+                
+                comp_flag = validate(st.session_state.board)
+
+                if not comp_flag:
+                    return 0
+
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)    
+
+
+        elif moves == 6:
+            if st.session_state.board[1,2]==psi:
+
+                st.session_state.board[1,2] =  '|1>'
+
+                user_flag = validate(st.session_state.board)
+
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
+
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
+
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+                
+                comp_flag = validate(st.session_state.board)
+
+                if not comp_flag:
+                    return 0
+
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
+
+
+        elif moves == 7:
+            if st.session_state.board[2,0]==psi:
+
+                st.session_state.board[2,0] =  '|1>'
+
+                user_flag = validate(st.session_state.board)
+
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
+
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
+
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+                
+                comp_flag = validate(st.session_state.board)
+
+                if not comp_flag:
+                    return 0
+
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
+
+        elif moves == 8:
+            if st.session_state.board[2,1]==psi:
+
+                st.session_state.board[2,1] =  '|1>'
+
+                user_flag = validate(st.session_state.board)
+
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
+
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
+
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+                
+                comp_flag = validate(st.session_state.board)
+
+                if not comp_flag:
+                    return 0
+
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
+
+        if moves == 9:
+            if st.session_state.board[2,2]==psi:
+
+                st.session_state.board[2,2] =  '|1>'
+
+                user_flag = validate(st.session_state.board)
+
+                if not user_flag:
+                    st.dataframe(st.session_state.board)
+                    st.session_state.available_moves=list()
+
+                comp_square = get_random_value()
+                col = (comp_square-1)%3
+                row=math.floor((comp_square-1)/3)
+                comp_value= '|0>'
+
+                if st.session_state.board[row,col]==psi:
+                    st.session_state.board[row,col] = comp_value
+                else :
+                    val1 = get_random_value_add()
+                    val2 = get_random_value_add()
+                    val3 = get_random_value_add()
+                    val4 = get_random_value_add()
+                    if st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val1,col+val2] = comp_value
+                         comp_square=comp_square+val1+val2
+                    elif st.session_state.board[row+val1,col+val2]==psi:
+                         st.session_state.board[row+val3,col+val4] = comp_value
+                         comp_square=comp_square+val3+val4
+                    else :
+                        st.session_state.board[row+val3,col+val2] = comp_value
+                        comp_square=comp_square+val3+val2
+                
+                comp_flag = validate(st.session_state.board)
+
+                if not comp_flag:
+                    return 0
+
+                st.write("computer's Move:",comp_square)
+                st.write("computer's value:",comp_value)
+                st.dataframe(st.session_state.board)
+            else:
+                st.dataframe(st.session_state.board)
+
+        # st.subheader('About')
+        #Add Image
+        # img = Image.open(r'D:\quantum_projects\qiskit.jpg')
+        # st.image(img)
+        # about = """
+        # Created by: Ajay , Kanieshkanth , Sakthi , Sanjay  
+
+        # Created Using: Python , Qiskit,Streamlit
+
+        # The Game is built to help beginners understand Quantum Superposition in a fun way.
+
+        # The Equation below displays the mathematical form of Quantum Superposition.
+
+        # """
+        # st.write(about)
+        # st.markdown(r'''
+        # $|\psi$> = Superposition State 
+
+        # |0> = Zero Ket = $$\begin{bmatrix}1 \\ 
+        #                     0
+        #                     \end{bmatrix}$$
+
+        # |1> = One Ket = $$\begin{bmatrix}0 \\
+        #                     1
+        #                     \end{bmatrix}$$
+
+        # After a measurement, superposition collapses into either of the basis states(\0> or |1>)
+
+        # Probability of $|\psi>$ collapsing to |0> = $|\alpha|^2$
+
+        # Probability of $|\psi>$ collapsing to |1> = $|\beta|^2$
+
+        # $|\alpha| ^ 2$+$|\beta|^2$=1
+        # ''')
+
+    # elif option=="Instructions":
+    #     st.subheader("Instructions")
+    #     psi = '|Ѱ>'
+    #     board = np.array([[psi,psi,psi],[psi,psi,psi],[psi,psi,psi]])
+    #     st.write('Board:')
+    #     st.dataframe(board)
+    #     instruction_1="""
+    #     The above board representsthe initial state of the gaem.
+
+    #     |Ѱ> represents the superposition state!
+
+    #     Always, the user is given the chance to make the first move.
+
+    #     |0> and |1> represent the piece the piece choosen by the computer and user respectively .
+
+    #     However, unlike the classical tic tac toe , there's not a 100% probability that 
+    #     when computer/user make their move , it will result into their respective move.
+
+    #     For eg, if user selects a piece, it's actually possible that the piece take the value of |0> and not |1>
+
+    #     This is the Quantum effect of Quantum Superposition in the Quantum Tic Tac Toe!
+
+    #     The square in the 3x3 grid (board) are numbered in the following manner as shown below:
+    #     """
+    #     st.write(instruction_1)
+    #     board_numbering = pd.DataFrame([[1,2,3],[4,5,6],[7,8,9]])
+    #     st.dataframe(board_numbering)
+
+    #     instruction_2="""
+    #     The user can select any space from the 3x3 grid using the selection menu as shown below and the , press the submit button .
+
+    #     (Note: To get back, select a value from the menu!)
+    #     """
+    #     st.write(instruction_2)
+
+    # else:
+    #     st.subheader('About')
+    #     #Add Image
+    #     img = Image.open(r'D:\quantum_projects\qiskit.jpg')
+    #     st.image(img)
+    #     about = """
+    #     Created by: Ajay , Kanieshkanth , Sakthi , Sanjay  
+
+    #     Created Using: Python , Qiskit,Streamlit
+
+    #     The Game is built to help beginners understand Quantum Superposition in a fun way.
+
+    #     The Equation below displays the mathematical form of Quantum Superposition.
+
+    #     """
+    #     st.write(about)
+    #     st.markdown(r'''
+    #     $|\psi$> = Superposition State 
+
+    #     |0> = Zero Ket = $$\begin{bmatrix}1 \\ 
+    #                         0
+    #                         \end{bmatrix}$$
+
+    #     |1> = One Ket = $$\begin{bmatrix}0 \\
+    #                         1
+    #                         \end{bmatrix}$$
+
+    #     After a measurement, superposition collapses into either of the basis states(\0> or |1>)
+
+    #     Probability of $|\psi>$ collapsing to |0> = $|\alpha|^2$
+
+    #     Probability of $|\psi>$ collapsing to |1> = $|\beta|^2$
+
+    #     $|\alpha| ^ 2$+$|\beta|^2$=1
+    #     ''')
+
+
+if __name__=='__main__':
+    condition = main()
+    if condition==0:
+        st.subheader('Game Over!')
