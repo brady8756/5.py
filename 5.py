@@ -2,7 +2,7 @@
 
 高 =  1000
 
-secret_number  = 隨機。randint ( 1 ,嗨)
+secret_number  = 隨機。randint ( 1,嗨)
 num_guesses  =  0
 
 而 真：
