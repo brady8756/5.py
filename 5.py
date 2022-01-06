@@ -1,150 +1,91 @@
-from typing import List, Tuple
-from string import ascii_lowercase
-import types
-import random
-import dataclasses
+"""Memory, puzzle game of number pairs.
 
-import streamlit as st
+Exercises:
 
-from gamestate import persistent_game_state
-
-PROTOTYPE = """
- ┏━━┑
- ┃  O>
- ┃>╦╧╦<
- ┃ ╠═╣
- ┃ ╨ ╨
- ┻━━━━
+1. Count and print how many taps occur.
+2. Decrease the number of tiles to a 4x4 grid.
+3. Detect when all tiles are revealed.
+4. Center single-digit tile.
+5. Use letters instead of tiles.
 """
 
+from random import *
+from turtle import *
 
-STEPS = [
-"""
- ┏━━┑
- ┃
- ┃
- ┃
- ┃
- ┻━━━━
-""",
-"""
- ┏━━┑
- ┃  O
- ┃
- ┃
- ┃
- ┻━━━━
-""",
-"""
- ┏━━┑
- ┃  O>
- ┃
- ┃
- ┃
- ┻━━━━
-""",
-"""
- ┏━━┑
- ┃  O>
- ┃ ╔╧╗
- ┃ ╚═╝
- ┃
- ┻━━━━
-""",
-"""
- ┏━━┑
- ┃  O>
- ┃>╦╧╗
- ┃ ╚═╝
- ┃
- ┻━━━━
-""",
-"""
- ┏━━┑
- ┃  O>
- ┃>╦╧╦<
- ┃ ╚═╝
- ┃
- ┻━━━━
-""",
-"""
- ┏━━┑
- ┃  O>
- ┃>╦╧╦<
- ┃ ╠═╝
- ┃ ╨
- ┻━━━━
-""",
-"""
- ┏━━┑
- ┃  O>
- ┃>╦╧╦<
- ┃ ╠═╣
- ┃ ╨ ╨
- ┻━━━━
-"""
-]
+from freegames import path
 
-MIN_LENGTH = 3
-MAX_LENGTH = 8
+car = path('car.gif')
+tiles = list(range(32)) * 2
+state = {'mark': None}
+hide = [True] * 64
 
-@st.cache
-def get_words() -> List[str]:
-    with open('words1000.txt') as f:
-        words = [line.strip() for line in f]
 
-    words = [w for w in words if MIN_LENGTH <= len(w) <= MAX_LENGTH]
-    words = [w for w in words if all('a' <= c <= 'z' for c in w)]
+def square(x, y):
+    """Draw white square with black outline at (x, y)."""
+    up()
+    goto(x, y)
+    down()
+    color('black', 'white')
+    begin_fill()
+    for count in range(4):
+        forward(50)
+        left(90)
+    end_fill()
 
-    return words
 
-@dataclasses.dataclass
-class GameState:
-    game_number: int
-    word: str
-    guessed: Tuple[str, ...] = ()
-    step: int = 0
-    game_over: bool = False
+def index(x, y):
+    """Convert (x, y) coordinates to tiles index."""
+    return int((x + 200) // 50 + ((y + 200) // 50) * 8)
 
-state = persistent_game_state(initial_state=GameState(0, random.choice(get_words()))) 
 
-if st.button("new game"):
-    state.guessed = ()
-    state.step = 0
-    state.game_number += 1
-    state.word = random.choice(get_words())
-    state.game_over = False
+def xy(count):
+    """Convert tiles count to (x, y) coordinates."""
+    return (count % 8) * 50 - 200, (count // 8) * 50 - 200
 
-if not state.game_over:
-    guess = st.text_input("guess a letter", max_chars=1, key=state.game_number)
 
-    if not guess:
-        st.write("please guess")
-    elif guess < 'a' or guess > 'z':
-        st.write("please guess a lowercase letter!")
-    elif guess in state.guessed:
-        st.write(f"you already guessed **{guess}**")
-    elif guess not in state.word:
-        st.write(f"the word has no **{guess}**")
-        state.step += 1
-        state.guessed += (guess,)
-    else: 
-        st.write("good guess")
-        state.guessed += (guess,)
+def tap(x, y):
+    """Update mark and hidden tiles based on tap."""
+    spot = index(x, y)
+    mark = state['mark']
 
-if state.step == len(STEPS) - 1:
-    st.markdown(f"you lose, the word was **{state.word}**")
-    state.game_over = True
-elif all(c in state.guessed for c in state.word):
-    st.markdown(f"**YOU WIN**")
-    state.game_over = True
+    if mark is None or mark == spot or tiles[mark] != tiles[spot]:
+        state['mark'] = spot
+    else:
+        hide[spot] = False
+        hide[mark] = False
+        state['mark'] = None
 
-# Show the chicken
-st.text(STEPS[state.step])
 
-# Show the word
-chars = [c if c in state.guessed else "_" for c in state.word]
-st.text(" ".join(chars))
+def draw():
+    """Draw image and tiles."""
+    clear()
+    goto(0, 0)
+    shape(car)
+    stamp()
 
-# Show the guessed letters
-st.text(f'guessed: {" ".join(state.guessed)}')
+    for count in range(64):
+        if hide[count]:
+            x, y = xy(count)
+            square(x, y)
+
+    mark = state['mark']
+
+    if mark is not None and hide[mark]:
+        x, y = xy(mark)
+        up()
+        goto(x + 2, y)
+        color('black')
+        write(tiles[mark], font=('Arial', 30, 'normal'))
+
+    update()
+    ontimer(draw, 100)
+
+
+shuffle(tiles)
+setup(420, 420, 370, 0)
+addshape(car)
+hideturtle()
+tracer(False)
+onscreenclick(tap)
+draw()
+done()
