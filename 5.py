@@ -1,10 +1,3 @@
-/*
- * @Author: Bian YuJie
- * @Date: 2020-03-31 17:39:45
- * @Last Modified by: Bian YuJie
- * @Last Modified time: 2020-03-31 20:46:45
- */
-
 //  8种胜利条件
 var winConditions = [
   [0, 1, 2],
