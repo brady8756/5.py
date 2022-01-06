@@ -1,208 +1,120 @@
- 8种胜利条件
-var winConditions = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-];
-var squareCount = 9; //格子数量
-var difficulty = "moron"; //游戏初始难度
-var gameOver = false; //游戏状态，游戏是否结束
-var squares = document.getElementsByClassName("square"); //获取格子
+from qiskit import QuantumCircuit, Aer
+import numpy as np
+import streamlit as st
 
-// -----显示游戏反馈信息，比如：你赢了，你输了-----
-var setMessageBox = function(caption) {
-  var messageBox = document.getElementById("messageBox");
-  messageBox.innerHTML = caption;
-};
 
-var findClaimedSquares = function(marker) {
-  var claimedSquares = [];
-  var value;
+def quantum_superposition():
 
-  for (var id = 0; id < squareCount; id++) {
-    value = document.getElementById(id).innerHTML;
-    if (value === marker) {
-      claimedSquares.push(id);
-    }
-  }
+    circuit = QuantumCircuit(1,1)
 
-  return claimedSquares;
-};
+    circuit.h(0)
 
-// -----重置游戏-----
-var resetGame = function() {
-  gameOver = false;
-  setMessageBox("请选择一个格子");
+    circuit.measure(0,0)
 
-  // 清除每个格子的内容，将格子的背景色回归到游戏开始状态
-  for (var id = 0; id < squareCount; id++) {
-    var square = document.getElementById(id);
-    square.innerHTML = "";
-    square.style.backgroundColor = "rgba(26, 148, 188, 0.8)";
-  }
-};
+    simulator = Aer.get_backend('aer_simulator')
 
-// -----检查是否胜利函数，-----
-var checkForWinCondition = function(marker) {
-  // 如果我们胜利了，将返回一个包含获胜组合的数组。如果输掉游戏返回 false
-  var claimedSquares = findClaimedSquares(marker);
+    result = simulator.run(circuit).result().get_counts()
 
-  var win = false;
-  for (var i = 0; i < winConditions.length; i++) {
-    win = winConditions[i].every(
-      element => claimedSquares.indexOf(element) > -1
-    );
-    if (win) {
-      win = winConditions[i];
-      break;
-    }
-  }
-  return win;
-};
+    return result
 
-// -----AI算法-----
-var secureWin = function() {
-  return makeMove("O");
-};
+def get_random_value_add():
+    res = quantum_superposition()
+    values = list(res.values())
+    keys = list(res.keys())
+    random_value = int(keys[np.argmax(values)])
+    return random_value
 
-var preventDefeat = function() {
-  return makeMove("X");
-};
+def get_random_value():
+    res1 = quantum_superposition()
+    values = list(res1.values())
+    keys = list(res1.keys())
+    random_value1 = int(keys[np.argmax(values)])
 
-var makeMove = function(marker) {
-  var moveMade = false;
-  for (var i = 0; i < winConditions.length; i++) {
-    var count = 0;
-    for (var j = 0; j < winConditions[i].length; j++) {
-      if (marker === document.getElementById(winConditions[i][j]).innerHTML) {
-        count++;
-      }
-    }
+    res2 = quantum_superposition()
+    values = list(res2.values())
+    keys = list(res2.keys())
+    random_value2 = int(keys[np.argmax(values)])
 
-    if (count == 2) {
-      for (j = 0; j < winConditions[i].length; j++) {
-        var square = document.getElementById(winConditions[i][j]);
-        if (squareIsOpen(square)) {
-          square.innerHTML = "O";
-          moveMade = true;
-          break;
-        }
-      }
-    }
+    res3 = quantum_superposition()
+    values = list(res3.values())
+    keys = list(res3.keys())
+    random_value3 = int(keys[np.argmax(values)])
 
-    if (moveMade) {
-      break;
-    }
-  }
-  return moveMade;
-};
+    res4 = quantum_superposition()
+    values = list(res4.values())
+    keys = list(res4.keys())
+    random_value4 = int(keys[np.argmax(values)])
 
-var opponentMove = function() {
-  if (difficulty === "moron") {
-    makeMoveAtFirstAvailableSquare();
-  } else {
-    var moveMade = secureWin();
-    if (!moveMade) {
-      moveMade = preventDefeat();
-      if (!moveMade) {
-        var center = document.getElementById(4);
-        if (squareIsOpen(center)) {
-          center.innerHTML = "O";
-        } else {
-          makeMoveAtFirstAvailableSquare();
-        }
-      }
-    }
-  }
-};
+    res5 = quantum_superposition()
+    values = list(res5.values())
+    keys = list(res5.keys())
+    random_value5 = int(keys[np.argmax(values)])
 
-var makeMoveAtFirstAvailableSquare = function() {
-  for (var id = 0; id < squareCount; id++) {
-    square = document.getElementById(id);
-    if (squareIsOpen(square)) {
-      square.innerHTML = "O";
-      break;
-    }
-  }
-};
+    res6 = quantum_superposition()
+    values = list(res6.values())
+    keys = list(res6.keys())
+    random_value6 = int(keys[np.argmax(values)])
 
-// -----检查格子是否是被占用状态-----
-var squareIsOpen = function(square) {
-  return square.innerHTML !== "X" && square.innerHTML !== "O";
-};
+    res7 = quantum_superposition()
+    values = list(res7.values())
+    keys = list(res7.keys())
+    random_value7 = int(keys[np.argmax(values)])
 
-// -----将获胜格子变为绿色，并设置获胜消息-----
-var highlightWinningSquares = function(winningSquares, color) {
-  for (var i = 0; i < winningSquares.length; i++) {
-    document.getElementById(winningSquares[i]).style.backgroundColor = color;
-  }
-};
+    res8 = quantum_superposition()
+    values = list(res8.values())
+    keys = list(res8.keys())
+    random_value8 = int(keys[np.argmax(values)])
 
-// -----检查是否平局-----
-var checkForDraw = function() {
-  var draw = true;
-  for (var id = 0; id < squareCount; id++) {
-    if (squareIsOpen(document.getElementById(id))) {
-      draw = false;
-      break;
-    }
-  }
-  return draw;
-};
+    res9 = quantum_superposition()
+    values = list(res9.values())
+    keys = list(res9.keys())
+    random_value9 = int(keys[np.argmax(values)])
 
-// -----选择格子主函数-----
-var chooseSquare = function() {
-  // 获取到游戏级别
-  difficulty = document.getElementById("difficulty").value;
+    total_rand = random_value1+random_value2+random_value3+random_value4+random_value5+random_value6+random_value7+random_value8+random_value9
+    return total_rand
 
-  // 先判断游戏是否结束
-  if (!gameOver) {
-    // 默认显示给玩家的信息
-    setMessageBox("请选择一个格子");
+def validate(arr):
+    flag = True
+    zero_ket = '|0>'
+    one_ket = '|1>'
 
-    // 获取到玩家选择的格子的id
-    var id = this.getAttribute("id");
-    var square = document.getElementById(id);
+    if arr[0,0]==one_ket and arr[1,1]==one_ket and arr[2,2]==one_ket:
+        st.success('user has won!')
+        flag=False
 
-    // 通过调用 squareIsOpen 函数检查格子是否是被占用状态
-    if (squareIsOpen(square)) {
-      // 因为这里格子是开放状态的，我们将格子标记设为 “ X ”
-      square.innerHTML = "X";
+    if arr[0,0]==zero_ket and arr[1,1]==zero_ket and arr[2,2]==zero_ket:
+        st.success('computer won!')
+        flag=False
 
-      // 通过调用 checkForWinCondition 函数检查我们是否胜利
-      var win = checkForWinCondition("X");
-      if (!win) {
-        // 如果玩家没有赢得比赛，那游戏继续
-        opponentMove();
-        var lost = checkForWinCondition("O");
-        if (!lost) {
-          var draw = checkForDraw();
-          if (draw) {
-            gameOver = true;
-            setMessageBox("平局");
-          }
-        } else {
-          gameOver = true;
-          highlightWinningSquares(lost, "rgb(229, 55, 55)");
-          setMessageBox("你输了");
-        }
-      } else {
-        gameOver = true;
-        highlightWinningSquares(win, "rgb(42, 178, 72)");
-        setMessageBox("你赢了");
-      }
-    } else {
-      // 检查格子是否是被占用时，如果格子已经被标记，玩家就不能对格子进行操作，在这里提示他信息。
-      setMessageBox("请选择空白格子");
-    }
-  }
-};
+    elif arr[0,2]==one_ket and arr[1,1]==one_ket and arr[2,0]==one_ket:
+        st.success('user has won!')
+        flag=False
 
-for (var i = 0; i < squares.length; i++) {
-  squares[i].addEventListener("click", chooseSquare, false);
-}
+    if not flag:
+        return 0
+
+    if flag:
+        for index in [0,1,2]:
+            if(list(arr[index])==[one_ket,one_ket,one_ket]):
+                st.success('User has won!')
+                return 0
+        
+        for index in [0,1,2]:
+            if(list(arr[index])==[zero_ket,zero_ket,zero_ket]):
+                st.success('computer won!')
+                return 0
+        
+        for index in [0,1,2]:
+            if(list(arr[:,index])==[one_ket,one_ket,one_ket]):
+                st.success('User has won!')
+                return 0
+        
+        for index in [0,1,2]:
+            if(list(arr[:,index])==[zero_ket,zero_ket,zero_ket]):
+                st.success('computer  has won!')
+                return 0
+        
+        if '|Ѱ>' not in arr:
+            st.write('It is draw!')
+            return 0
+    return 1
