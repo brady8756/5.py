@@ -1,120 +1,97 @@
-from qiskit import QuantumCircuit, Aer
-import numpy as np
 import streamlit as st
+import random as rnd
+
+st.set_page_config(
+    "Guessing Game"
+)
+
+if 'number' not in st.session_state:
+    st.session_state.number = None
+if 'number_from' not in st.session_state:
+    st.session_state.number_from = None
+if 'number_to' not in st.session_state:
+    st.session_state.number_to = None
+if 'number_of_guesses' not in st.session_state:
+    st.session_state.number_of_guesses = None
+if 'passed1' not in st.session_state:
+    st.session_state.passed1 = False
+if 'end' not in st.session_state:
+    st.session_state.end = False
+if 'name' not in st.session_state:
+    st.session_state.name = False
 
 
-def quantum_superposition():
+if not st.session_state.name:
+   st.session_state.name = st.text_input("你好! 叫什麼名字?")
 
-    circuit = QuantumCircuit(1,1)
+if st.session_state.name and (not st.session_state.passed1):
+    with st.form("form1"):
+        st.session_state.number_of_guesses = st.number_input(
+            f'{st.session_state.name.capitalize()} 你覺得自己有多幸運\
+                 ? 你想猜多少呢?',
+            min_value=1,
+            max_value=10,
+            value=5
+        )
+        st.session_state.number_from = st.number_input(
+            '範圍選擇最小的數字，您希望它是多少?',
+            min_value=1,
+            max_value=100
+        )
+        st.session_state.number_to = st.number_input(
+            '範圍選擇最大的數字，您希望它是什麼\
+                 是？',
+            min_value=100,
+            max_value=100
+        )
+        submitted1 = st.form_submit_button("自我挑戰")
 
-    circuit.h(0)
+    # need to validate user inputs
+    if submitted1:
+        if not (st.session_state.number_to > st.session_state.number_from):
+            st.error('抱歉，最大的數字必須大於\
+                    最小的!')
+        else:
+            st.session_state.passed1 = True
+            # the number generation has to be outside of guessing form,
+            # otherwise it keeps generating a new number
+            st.session_state.number = rnd.randint(
+                st.session_state.number_from, st.session_state.number_to)
 
-    circuit.measure(0,0)
+if st.session_state.passed1 and (not st.session_state.end):
+    f'Well, {st.session_state.name} 在數字\
+         之間 {st.session_state.number_from} and\
+              {st.session_state.number_to}.'
 
-    simulator = Aer.get_backend('aer_simulator')
+    with st.form("form2"):
+        guess = st.number_input(
+            '',
+            min_value=1,
+            max_value=100
+        )
+        submitted2 = st.form_submit_button("自我挑戰")
 
-    result = simulator.run(circuit).result().get_counts()
+    if submitted2:
+        st.session_state.number_of_guesses -= 1
+        st.info(f" {st.session_state.number_of_guesses} 次機會")
+        if guess < st.session_state.number_from \
+                or guess > st.session_state.number_to:
+            st.warning("超出範圍, FOOL!")
+        elif guess < st.session_state.number:
+            st.warning("比密碼小!")
+        elif guess > st.session_state.number:
+            st.warning("比密碼大!")
+        else:
+            st.success("挑戰成功")
+            st.session_state.end = True
 
-    return result
+        if st.session_state.number_of_guesses == 0:
+            st.error(f"輸了喔 數字是\
+                 {st.session_state.number}")
+            st.session_state.end = True
 
-def get_random_value_add():
-    res = quantum_superposition()
-    values = list(res.values())
-    keys = list(res.keys())
-    random_value = int(keys[np.argmax(values)])
-    return random_value
-
-def get_random_value():
-    res1 = quantum_superposition()
-    values = list(res1.values())
-    keys = list(res1.keys())
-    random_value1 = int(keys[np.argmax(values)])
-
-    res2 = quantum_superposition()
-    values = list(res2.values())
-    keys = list(res2.keys())
-    random_value2 = int(keys[np.argmax(values)])
-
-    res3 = quantum_superposition()
-    values = list(res3.values())
-    keys = list(res3.keys())
-    random_value3 = int(keys[np.argmax(values)])
-
-    res4 = quantum_superposition()
-    values = list(res4.values())
-    keys = list(res4.keys())
-    random_value4 = int(keys[np.argmax(values)])
-
-    res5 = quantum_superposition()
-    values = list(res5.values())
-    keys = list(res5.keys())
-    random_value5 = int(keys[np.argmax(values)])
-
-    res6 = quantum_superposition()
-    values = list(res6.values())
-    keys = list(res6.keys())
-    random_value6 = int(keys[np.argmax(values)])
-
-    res7 = quantum_superposition()
-    values = list(res7.values())
-    keys = list(res7.keys())
-    random_value7 = int(keys[np.argmax(values)])
-
-    res8 = quantum_superposition()
-    values = list(res8.values())
-    keys = list(res8.keys())
-    random_value8 = int(keys[np.argmax(values)])
-
-    res9 = quantum_superposition()
-    values = list(res9.values())
-    keys = list(res9.keys())
-    random_value9 = int(keys[np.argmax(values)])
-
-    total_rand = random_value1+random_value2+random_value3+random_value4+random_value5+random_value6+random_value7+random_value8+random_value9
-    return total_rand
-
-def validate(arr):
-    flag = True
-    zero_ket = '|0>'
-    one_ket = '|1>'
-
-    if arr[0,0]==one_ket and arr[1,1]==one_ket and arr[2,2]==one_ket:
-        st.success('user has won!')
-        flag=False
-
-    if arr[0,0]==zero_ket and arr[1,1]==zero_ket and arr[2,2]==zero_ket:
-        st.success('computer won!')
-        flag=False
-
-    elif arr[0,2]==one_ket and arr[1,1]==one_ket and arr[2,0]==one_ket:
-        st.success('user has won!')
-        flag=False
-
-    if not flag:
-        return 0
-
-    if flag:
-        for index in [0,1,2]:
-            if(list(arr[index])==[one_ket,one_ket,one_ket]):
-                st.success('User has won!')
-                return 0
-        
-        for index in [0,1,2]:
-            if(list(arr[index])==[zero_ket,zero_ket,zero_ket]):
-                st.success('computer won!')
-                return 0
-        
-        for index in [0,1,2]:
-            if(list(arr[:,index])==[one_ket,one_ket,one_ket]):
-                st.success('User has won!')
-                return 0
-        
-        for index in [0,1,2]:
-            if(list(arr[:,index])==[zero_ket,zero_ket,zero_ket]):
-                st.success('computer  has won!')
-                return 0
-        
-        if '|Ѱ>' not in arr:
-            st.write('It is draw!')
-            return 0
-    return 1
+if st.session_state.end:
+    '''
+    # 謝謝來玩 請再次光臨!
+    ## 如果想再玩一次 請按F5!
+    '''
