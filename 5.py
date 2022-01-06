@@ -1,207 +1,215 @@
-from tkinter import *
-from tkinter import ttk
-import tkinter.messagebox
+/*
+ * @Author: Bian YuJie
+ * @Date: 2020-03-31 17:39:45
+ * @Last Modified by: Bian YuJie
+ * @Last Modified time: 2020-03-31 20:46:45
+ */
 
-root=Tk()
-root.title("Tic Tac Toe")
-#add Buttons
-bu1=ttk.Button(root,text=' ')
-bu1.grid(row=0,column=0,sticky='snew',ipadx=40,ipady=40)
-bu1.config(command=lambda: ButtonClick(1))
+//  8种胜利条件
+var winConditions = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
+var squareCount = 9; //格子数量
+var difficulty = "moron"; //游戏初始难度
+var gameOver = false; //游戏状态，游戏是否结束
+var squares = document.getElementsByClassName("square"); //获取格子
 
-bu2=ttk.Button(root,text=' ')
-bu2.grid(row=0,column=1,sticky='snew',ipadx=40,ipady=40)
-bu2.config(command=lambda: ButtonClick(2))
+// -----显示游戏反馈信息，比如：你赢了，你输了-----
+var setMessageBox = function(caption) {
+  var messageBox = document.getElementById("messageBox");
+  messageBox.innerHTML = caption;
+};
 
-bu3=ttk.Button(root,text=' ')
-bu3.grid(row=0,column=2,sticky='snew',ipadx=40,ipady=40)
-bu3.config(command=lambda: ButtonClick(3))
+var findClaimedSquares = function(marker) {
+  var claimedSquares = [];
+  var value;
 
-bu4=ttk.Button(root,text=' ')
-bu4.grid(row=1,column=0,sticky='snew',ipadx=40,ipady=40)
-bu4.config(command=lambda: ButtonClick(4))
+  for (var id = 0; id < squareCount; id++) {
+    value = document.getElementById(id).innerHTML;
+    if (value === marker) {
+      claimedSquares.push(id);
+    }
+  }
 
-bu5=ttk.Button(root,text=' ')
-bu5.grid(row=1,column=1,sticky='snew',ipadx=40,ipady=40)
-bu5.config(command=lambda: ButtonClick(5))
+  return claimedSquares;
+};
 
-bu6=ttk.Button(root,text=' ')
-bu6.grid(row=1,column=2,sticky='snew',ipadx=40,ipady=40)
-bu6.config(command=lambda: ButtonClick(6))
+// -----重置游戏-----
+var resetGame = function() {
+  gameOver = false;
+  setMessageBox("请选择一个格子");
 
-bu7=ttk.Button(root,text=' ')
-bu7.grid(row=2,column=0,sticky='snew',ipadx=40,ipady=40)
-bu7.config(command=lambda: ButtonClick(7))
+  // 清除每个格子的内容，将格子的背景色回归到游戏开始状态
+  for (var id = 0; id < squareCount; id++) {
+    var square = document.getElementById(id);
+    square.innerHTML = "";
+    square.style.backgroundColor = "rgba(26, 148, 188, 0.8)";
+  }
+};
 
-bu8=ttk.Button(root,text=' ')
-bu8.grid(row=2,column=1,sticky='snew',ipadx=40,ipady=40)
-bu8.config(command=lambda: ButtonClick(8))
+// -----检查是否胜利函数，-----
+var checkForWinCondition = function(marker) {
+  // 如果我们胜利了，将返回一个包含获胜组合的数组。如果输掉游戏返回 false
+  var claimedSquares = findClaimedSquares(marker);
 
-bu9=ttk.Button(root,text=' ')
-bu9.grid(row=2,column=2,sticky='snew',ipadx=40,ipady=40)
-bu9.config(command=lambda: ButtonClick(9))
+  var win = false;
+  for (var i = 0; i < winConditions.length; i++) {
+    win = winConditions[i].every(
+      element => claimedSquares.indexOf(element) > -1
+    );
+    if (win) {
+      win = winConditions[i];
+      break;
+    }
+  }
+  return win;
+};
 
-playerturn=ttk.Label(root,text="   Player 1 turn!  ")
-playerturn.grid(row=3,column=0,sticky='snew',ipadx=40,ipady=40)
+// -----AI算法-----
+var secureWin = function() {
+  return makeMove("O");
+};
 
-playerdetails=ttk.Label(root,text="    Player 1 is X\n\n    Player 2 is O")
-playerdetails.grid(row=3,column=2,sticky='snew',ipadx=40,ipady=40)
+var preventDefeat = function() {
+  return makeMove("X");
+};
 
-res=ttk.Button(root,text='Restart')
-res.grid(row=3,column=1,sticky='snew',ipadx=40,ipady=40)
-res.config(command=lambda: restartbutton())
+var makeMove = function(marker) {
+  var moveMade = false;
+  for (var i = 0; i < winConditions.length; i++) {
+    var count = 0;
+    for (var j = 0; j < winConditions[i].length; j++) {
+      if (marker === document.getElementById(winConditions[i][j]).innerHTML) {
+        count++;
+      }
+    }
 
-a=1
-b=0
-c=0
-def restartbutton():
-    global a,b,c
-    a=1
-    b=0
-    c=0
-    playerturn['text']="   Player 1 turn!   "
-    bu1['text']=' '
-    bu2['text']=' '
-    bu3['text']=' '
-    bu4['text']=' '
-    bu5['text']=' '
-    bu6['text']=' '
-    bu7['text']=' '
-    bu8['text']=' '
-    bu9['text']=' '
-    bu1.state(['!disabled'])
-    bu2.state(['!disabled'])
-    bu3.state(['!disabled'])
-    bu4.state(['!disabled'])
-    bu5.state(['!disabled'])
-    bu6.state(['!disabled'])
-    bu7.state(['!disabled'])
-    bu8.state(['!disabled'])
-    bu9.state(['!disabled'])
-    
-#after getting result(win or loss or draw) disable button
-def disableButton():
-    bu1.state(['disabled'])
-    bu2.state(['disabled'])
-    bu3.state(['disabled'])
-    bu4.state(['disabled'])
-    bu5.state(['disabled'])
-    bu6.state(['disabled'])
-    bu7.state(['disabled'])
-    bu8.state(['disabled'])
-    bu9.state(['disabled'])
+    if (count == 2) {
+      for (j = 0; j < winConditions[i].length; j++) {
+        var square = document.getElementById(winConditions[i][j]);
+        if (squareIsOpen(square)) {
+          square.innerHTML = "O";
+          moveMade = true;
+          break;
+        }
+      }
+    }
 
+    if (moveMade) {
+      break;
+    }
+  }
+  return moveMade;
+};
 
-def ButtonClick(id):
-    global a,b,c
-    print("ID:{}".format(id))
+var opponentMove = function() {
+  if (difficulty === "moron") {
+    makeMoveAtFirstAvailableSquare();
+  } else {
+    var moveMade = secureWin();
+    if (!moveMade) {
+      moveMade = preventDefeat();
+      if (!moveMade) {
+        var center = document.getElementById(4);
+        if (squareIsOpen(center)) {
+          center.innerHTML = "O";
+        } else {
+          makeMoveAtFirstAvailableSquare();
+        }
+      }
+    }
+  }
+};
 
-    #for player 1 turn
-    if id==1 and bu1['text']==' ' and a==1:
-        bu1['text']="X"
-        a=0
-        b+=1
-    if id==2 and bu2['text']==' ' and a==1:
-        bu2['text']="X"
-        a=0
-        b+=1
-    if id==3 and bu3['text']==' ' and a==1:
-        bu3['text']="X"
-        a=0
-        b+=1
-    if id==4 and bu4['text']==' ' and a==1:
-        bu4['text']="X"
-        a=0
-        b+=1
-    if id==5 and bu5['text']==' ' and a==1:
-        bu5['text']="X"
-        a=0
-        b+=1
-    if id==6 and bu6['text']==' ' and a==1:
-        bu6['text']="X"
-        a=0
-        b+=1
-    if id==7 and bu7['text']==' ' and a==1:
-        bu7['text']="X"
-        a=0
-        b+=1
-    if id==8 and bu8['text']==' ' and a==1:
-        bu8['text']="X"
-        a=0
-        b+=1
-    if id==9 and bu9['text']==' ' and a==1:
-        bu9['text']="X"
-        a=0
-        b+=1
-    #for player 2 turn
-    if id==1 and bu1['text']==' ' and a==0:
-        bu1['text']="O"
-        a=1
-        b+=1
-    if id==2 and bu2['text']==' ' and a==0:
-        bu2['text']="O"
-        a=1
-        b+=1
-    if id==3 and bu3['text']==' ' and a==0:
-        bu3['text']="O"
-        a=1
-        b+=1
-    if id==4 and bu4['text']==' ' and a==0:
-        bu4['text']="O"
-        a=1
-        b+=1
-    if id==5 and bu5['text']==' ' and a==0:
-        bu5['text']="O"
-        a=1
-        b+=1
-    if id==6 and bu6['text']==' ' and a==0:
-        bu6['text']="O"
-        a=1
-        b+=1
-    if id==7 and bu7['text']==' ' and a==0:
-        bu7['text']="O"
-        a=1
-        b+=1
-    if id==8 and bu8['text']==' ' and a==0:
-        bu8['text']="O"
-        a=1
-        b+=1
-    if id==9 and bu9['text']==' ' and a==0:
-        bu9['text']="O"
-        a=1
-        b+=1
-        
-    #checking for winner   
-    if( bu1['text']=='X' and bu2['text']=='X' and bu3['text']=='X' or
-        bu4['text']=='X' and bu5['text']=='X' and bu6['text']=='X' or
-        bu7['text']=='X' and bu8['text']=='X' and bu9['text']=='X' or
-        bu1['text']=='X' and bu4['text']=='X' and bu7['text']=='X' or
-        bu2['text']=='X' and bu5['text']=='X' and bu8['text']=='X' or
-        bu3['text']=='X' and bu6['text']=='X' and bu9['text']=='X' or
-        bu1['text']=='X' and bu5['text']=='X' and bu9['text']=='X' or
-        bu3['text']=='X' and bu5['text']=='X' and bu7['text']=='X'):
-            disableButton()
-            c=1
-            tkinter.messagebox.showinfo("Tic Tac Toe","Winner is player 1")
-    elif( bu1['text']=='O' and bu2['text']=='O' and bu3['text']=='O' or
-        bu4['text']=='O' and bu5['text']=='O' and bu6['text']=='O' or
-        bu7['text']=='O' and bu8['text']=='O' and bu9['text']=='O' or
-        bu1['text']=='O' and bu4['text']=='O' and bu7['text']=='O' or
-        bu2['text']=='O' and bu5['text']=='O' and bu8['text']=='O' or
-        bu3['text']=='O' and bu6['text']=='O' and bu9['text']=='O' or
-        bu1['text']=='O' and bu5['text']=='O' and bu9['text']=='O' or
-        bu3['text']=='O' and bu5['text']=='O' and bu7['text']=='O'):
-            disableButton()
-            c=1
-            tkinter.messagebox.showinfo("Tic Tac Toe","Winner is player 2")
-    elif b==9:
-            disableButton()
-            c=1
-            tkinter.messagebox.showinfo("Tic Tac Toe","Match is Draw.")
+var makeMoveAtFirstAvailableSquare = function() {
+  for (var id = 0; id < squareCount; id++) {
+    square = document.getElementById(id);
+    if (squareIsOpen(square)) {
+      square.innerHTML = "O";
+      break;
+    }
+  }
+};
 
-    if a==1 and c==0:
-        playerturn['text']="   Player 1 turn!   "
-    elif a==0 and c==0:
-        playerturn['text']="   Player 2 turn!   "
-            
-root.mainloop()
+// -----检查格子是否是被占用状态-----
+var squareIsOpen = function(square) {
+  return square.innerHTML !== "X" && square.innerHTML !== "O";
+};
+
+// -----将获胜格子变为绿色，并设置获胜消息-----
+var highlightWinningSquares = function(winningSquares, color) {
+  for (var i = 0; i < winningSquares.length; i++) {
+    document.getElementById(winningSquares[i]).style.backgroundColor = color;
+  }
+};
+
+// -----检查是否平局-----
+var checkForDraw = function() {
+  var draw = true;
+  for (var id = 0; id < squareCount; id++) {
+    if (squareIsOpen(document.getElementById(id))) {
+      draw = false;
+      break;
+    }
+  }
+  return draw;
+};
+
+// -----选择格子主函数-----
+var chooseSquare = function() {
+  // 获取到游戏级别
+  difficulty = document.getElementById("difficulty").value;
+
+  // 先判断游戏是否结束
+  if (!gameOver) {
+    // 默认显示给玩家的信息
+    setMessageBox("请选择一个格子");
+
+    // 获取到玩家选择的格子的id
+    var id = this.getAttribute("id");
+    var square = document.getElementById(id);
+
+    // 通过调用 squareIsOpen 函数检查格子是否是被占用状态
+    if (squareIsOpen(square)) {
+      // 因为这里格子是开放状态的，我们将格子标记设为 “ X ”
+      square.innerHTML = "X";
+
+      // 通过调用 checkForWinCondition 函数检查我们是否胜利
+      var win = checkForWinCondition("X");
+      if (!win) {
+        // 如果玩家没有赢得比赛，那游戏继续
+        opponentMove();
+        var lost = checkForWinCondition("O");
+        if (!lost) {
+          var draw = checkForDraw();
+          if (draw) {
+            gameOver = true;
+            setMessageBox("平局");
+          }
+        } else {
+          gameOver = true;
+          highlightWinningSquares(lost, "rgb(229, 55, 55)");
+          setMessageBox("你输了");
+        }
+      } else {
+        gameOver = true;
+        highlightWinningSquares(win, "rgb(42, 178, 72)");
+        setMessageBox("你赢了");
+      }
+    } else {
+      // 检查格子是否是被占用时，如果格子已经被标记，玩家就不能对格子进行操作，在这里提示他信息。
+      setMessageBox("请选择空白格子");
+    }
+  }
+};
+
+for (var i = 0; i < squares.length; i++) {
+  squares[i].addEventListener("click", chooseSquare, false);
+}
